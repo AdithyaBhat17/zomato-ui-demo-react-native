@@ -1,7 +1,8 @@
 import React from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, View } from 'react-native'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { StyleSheet, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, View, StatusBar } from 'react-native'
 import { getCityIdAPI } from './utils'
+import Collections from './components/Collections'
+import { Constants } from 'expo'
 
 export default class App extends React.Component {
   constructor(props) {
@@ -14,7 +15,6 @@ export default class App extends React.Component {
       },
       city_input: '',
       showCollections: false,
-      collections: null
     }
   }
 
@@ -36,8 +36,11 @@ export default class App extends React.Component {
     const { city_input, city, showCollections } = this.state 
     if(showCollections) 
       return (
-        <View style={styles.container}>
-          <Text>Trending <MaterialCommunityIcons name="fire" size={32} color='orange' /></Text>
+        <View style={{flex: 1}}>
+          <View style={{backgroundColor: 'black', height: Constants.statusBarHeight}}>
+            <StatusBar translucent backgroundColor='black' barStyle="light-content" />
+          </View>
+          <Collections city={city}/>
         </View>
       )
     return (
