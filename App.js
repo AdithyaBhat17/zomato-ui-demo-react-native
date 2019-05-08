@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, View } from 'react-native'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { getCityIdAPI } from './utils'
 
 export default class App extends React.Component {
@@ -10,23 +11,50 @@ export default class App extends React.Component {
         id: null,
         flag: undefined,
         name: ''
-      }
+      },
+      city_input: '',
+      showCollections: false,
+      collections: null
     }
   }
-  componentDidMount () {
-    // getCityIdAPI('delhi').then(city => {
-    //   const { id, name, country_flag_url } = city.location_suggestions[0]
-    //   this.setState(() => ({
-    //     id, name, flag: country_flag_url
-    //   }))
-    // })
+
+  getCityId = () => {
+    const { city_input } = this.state
+    city_input.trim().length !== 0 ? getCityIdAPI(city_input).then(city => {
+      if(city.location_suggestions.length !== 0) {
+        const { id, name, country_flag_url } = city.location_suggestions[0]
+        this.setState({
+          city: {id, name, flag: country_flag_url},
+          showCollections: true
+        })
+       } else 
+        alert('Something went wrong! Please try again with a valid city name') 
+    }) : alert('Please enter a valid city name')
   }
+
   render() {
-    console.log(this.state)
+    const { city_input, city, showCollections } = this.state 
+    if(showCollections) 
+      return (
+        <View style={styles.container}>
+          <Text>Trending <MaterialCommunityIcons name="fire" size={32} color='orange' /></Text>
+        </View>
+      )
     return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working!</Text>
-      </View>
+      <KeyboardAvoidingView behavior="padding" style={styles.container}>
+        <Text style={styles.header}>Enter a city name</Text>
+        <TextInput 
+         value={city_input}
+         style={styles.input}
+         onChangeText={(city_input) => console.log(city_input) || this.setState({city_input})}
+         />
+        <TouchableOpacity
+         style={styles.button}
+         onPress={this.getCityId}
+        >
+          <Text style={{color: '#fff'}}>Get Started</Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
     )
   }
 }
@@ -38,4 +66,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  header: {
+    fontSize: 24,
+    fontWeight: "500"
+  },
+  input: {
+    marginTop: 10,
+    borderWidth: 1,
+    borderRadius: 5,
+    width: '80%',
+    borderColor: '#000',
+    padding: 10
+  },
+  button: {
+    marginTop: 10,
+    borderRadius: 6,
+    shadowOffset: { width: 0, height: 0.4 },
+    shadowOpacity: 0.8,
+    backgroundColor: '#000',
+    color: '#fff',
+    padding: 10
+  }
 })
