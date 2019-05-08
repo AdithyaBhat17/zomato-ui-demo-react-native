@@ -11,6 +11,17 @@ export function getCityIdAPI (city) {
             'user-key': API_KEY
         }
     })
-    .then(response => console.log(response) || response.json())
+    .then(response => response.json())
+}
+
+export function getCollectionsAPI(city_id) {
+    return fetch('https://developers.zomato.com/api/v2.1/collections?city_id=' + city_id, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'user-key': API_KEY
+        }
+    })
+    .then(response => response.json())
 }
 
