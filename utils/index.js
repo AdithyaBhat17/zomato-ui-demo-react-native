@@ -11,6 +11,6 @@ export function getCityIdAPI (city) {
             'user-key': API_KEY
         }
     })
-    .then(response => response.json())
+    .then(response => console.log(response) || response.json())
 }
 
