@@ -15,6 +15,7 @@ export function getCityIdAPI (city) {
 }
 
 export function getCollectionsAPI(city_id) {
+    console.log('https://developers.zomato.com/api/v2.1/collections?city_id=' + city_id)
     return fetch('https://developers.zomato.com/api/v2.1/collections?city_id=' + city_id, {
         method: 'GET',
         headers: {
