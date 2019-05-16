@@ -1,7 +1,19 @@
 import React from 'react'
-import { View, Text, FlatList, StyleSheet, Image, Dimensions, TextInput, TouchableOpacity } from 'react-native'
+import { 
+    View, 
+    Text, 
+    FlatList, 
+    StyleSheet, 
+    Image, 
+    Dimensions, 
+    TextInput, 
+    Linking, 
+    TouchableWithoutFeedback
+} from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { getCollectionsAPI } from '../utils';
+import { getCollectionsAPI } from '../utils'
+
+import { createAppContainer, createBottomTabNavigator } from 'react-navigation'
 
 export default class Collections extends React.Component {
     constructor(props) {
@@ -17,6 +29,12 @@ export default class Collections extends React.Component {
         getCollectionsAPI(4)
         .then(collection => this.setState({collections: collection.collections}))
     }
+
+    openURL(url) {
+        Linking.openURL(url)
+        .catch(error => console.log(error))
+    }
+
     render() {
         const { collections } = this.state
         const { city } = this.props
@@ -35,12 +53,13 @@ export default class Collections extends React.Component {
                      showsVerticalScrollIndicator={false}
                      data={collections}
                      renderItem={({item}) => (
-                        <View style={styles.card} key={item.collection.collection_id}>
-                            <Image source={{uri: item.collection.image_url}} style={styles.image}/>
-                            <Text style={styles.title}>{item.collection.title}</Text>
-                            <Text style={styles.desc}>{item.collection.description}</Text>
-                            {/* TODO: url and share_url */}
-                        </View>
+                        <TouchableWithoutFeedback onPress={() => this.openURL(item.collection.url)} key={item.collection.collection_id}>
+                            <View style={styles.card}>
+                                <Image source={{uri: item.collection.image_url}} style={styles.image}/>
+                                <Text style={styles.title}>{item.collection.title}</Text>
+                                <Text style={styles.desc}>{item.collection.description}</Text>
+                            </View>
+                        </TouchableWithoutFeedback>
                      )}
                      keyExtractor={(item, index) => index.toString()}
                     />
