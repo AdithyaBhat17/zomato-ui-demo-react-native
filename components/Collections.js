@@ -6,28 +6,33 @@ import {
     StyleSheet, 
     Image, 
     Dimensions, 
-    TextInput, 
     Linking, 
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback,
+    ActivityIndicator
 } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { getCollectionsAPI } from '../utils'
+import Restaurants from './Restaurants'
 
 import { createAppContainer, createBottomTabNavigator } from 'react-navigation'
 
-export default class Collections extends React.Component {
+class Collections extends React.Component {
     constructor(props) {
         super(props)
         this.state =  {
             collections: null,
-            search: '🔎 for restaurants and hit enter...'
-        }
-        
+            loading: true
+        }        
     }
-    componentDidMount() {
-        console.log(this.props.city.id)
-        getCollectionsAPI(4)
-        .then(collection => this.setState({collections: collection.collections}))
+
+    componentDidMount() {        
+        navigator.geolocation.getCurrentPosition(
+            (position) => console.log(position) || getCollectionsAPI(position.coords.latitude, position.coords.longitude)
+                            .then(collection => this.setState({collections: collection.collections, loading: false})),
+            (err) => console.log(err), 
+            { enableHighAccuracy: false, timeout: 8000, maximumAge: 10000 }
+        );
+        // TODO: Handle errors with copies
     }
 
     openURL(url) {
@@ -36,24 +41,26 @@ export default class Collections extends React.Component {
     }
 
     render() {
-        const { collections } = this.state
-        const { city } = this.props
-        return (
-            <View style={styles.container}>
-                <View style={{flexDirection:'row', justifyContent: 'center'}}>
-                    <TextInput 
-                     style={styles.search}
-                     onChangeText={(search) => this.setState({search})}
-                     value={this.state.search}
-                    />
+        const { collections, loading } = this.state
+        console.log(collections, loading)
+        if(loading)
+            return (
+                <View style={styles.container}>
+                    <ActivityIndicator />
                 </View>
+            )
+               
+        return (
+            <View style={styles.container}>                
                 <Text style={styles.head}>Trending <MaterialCommunityIcons name="fire" size={32} color='orange' /></Text>
                 {collections && <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                     <FlatList 
                      showsVerticalScrollIndicator={false}
                      data={collections}
                      renderItem={({item}) => (
-                        <TouchableWithoutFeedback onPress={() => this.openURL(item.collection.url)} key={item.collection.collection_id}>
+                        <TouchableWithoutFeedback
+                         onPress={() => this.openURL(item.collection.url)} 
+                         key={item.collection.collection_id}>
                             <View style={styles.card}>
                                 <Image source={{uri: item.collection.image_url}} style={styles.image}/>
                                 <Text style={styles.title}>{item.collection.title}</Text>
@@ -69,6 +76,11 @@ export default class Collections extends React.Component {
         )
     }
 }
+
+const Tabs = createBottomTabNavigator({
+    Trending: Collections,
+    Restaurants: Restaurants,
+})
 
 const { width, height } = Dimensions.get('window')
 
@@ -117,3 +129,5 @@ const styles = StyleSheet.create({
         width: width * 0.9
     }
 })
+
+export default createAppContainer(Tabs)
