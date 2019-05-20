@@ -10,7 +10,7 @@ import {
     TouchableWithoutFeedback,
     ActivityIndicator
 } from 'react-native'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'
 import { getCollectionsAPI } from '../utils'
 import Restaurants from './Restaurants'
 
@@ -80,6 +80,38 @@ class Collections extends React.Component {
 const Tabs = createBottomTabNavigator({
     Trending: Collections,
     Restaurants: Restaurants,
+}, {
+    defaultNavigationOptions: ({ navigation }) => ({
+        tabBarIcon: ({ focused, horizontal, tintColor }) => {
+            const { routeName }= navigation.state
+            let IconComponent
+            let iconName
+            if(routeName === 'Trending') {
+                iconName = 'fire'
+                IconComponent = MaterialCommunityIcons
+            } else if(routeName === 'Restaurants') {
+                iconName = 'ios-search'
+                IconComponent = Ionicons
+            }
+            
+            return <IconComponent name={iconName} size={24} color={tintColor} />
+        }
+    }),
+    tabBarOptions: {
+        activeTintColor: '#BE2623',
+        inactiveTintColor: '#0E3746',
+        activeBackgroundColor: '#EAE8DC',
+        inactiveBackgroundColor: '#F4F2EC',
+        labelStyle: {
+            fontSize: 14
+        },
+        style: {
+            shadowOffset: {
+                width: 0, height: 2
+            },
+            shadowOpacity: 0.6
+        }
+    }
 })
 
 const { width, height } = Dimensions.get('window')
