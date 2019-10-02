@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",
-    "metro-react-native-babel-preset": "^0.54.0",
+    "metro-react-native-babel-preset": "^0.56.0",
     "react-native-dotenv": "^0.2.0"
   },
   "private": true
